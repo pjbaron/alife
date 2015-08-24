@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">  <!-- request GPU rasterization from Chrome browsers, where available -->
+    <meta charset="utf-8" />
+    <title>Dots</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            border: none;
+        }
+
+        #gui {
+            position: absolute;
+            top: 200px;
+            right: 0;
+        }
+    </style>
+
+    <!-- libraries -->
+    <script type="text/javascript" src="lib/dat.gui.js"></script>
+    <script type="text/javascript" src="lib/stats.js"></script>
+    <script type="text/javascript" src="lib/goo.min.js"></script>
+
+    <!-- project source -->
+    <script type="text/javascript" src="src/alife.js"></script>
+    <script type="text/javascript" src="src/dots.js"></script>
+	<script type="text/javascript" src="src/dot.js"></script>
+    <script type="text/javascript" src="src/world.js"></script>
+    <script type="text/javascript" src="src/terrain.js"></script>
+    <script type="text/javascript" src="src/grass.js"></script>
+
+</head>
+
+<body>
+
+    <div id="gui"></div>
+
+<script type="text/javascript">
+
+	// canvas size limits
+	var MAX_WIDTH = 1000;
+	var MAX_HEIGHT = 1000;
+
+	// globals for demo control
+    var demo;
+    var demoName = null;
+    var docId = 'Evolving Intelligence';
+    var canvas = null;
+    var ctx = null;
+    var trailColour = 0x007f00;     // bgr format!
+
+    // after reading: http://www.sitepoint.com/google-closure-how-not-to-write-javascript/
+    var _undefinedCheck;
+    if (undefined !== _undefinedCheck)
+    {
+        alert("'undefined' has been redefined which will screw up this script.");
+    }
+
+    // canvas
+    canvas = document.createElement('canvas');
+    canvas.setAttribute('id', this.docId);
+    canvas.setAttribute('width', MAX_WIDTH);
+    canvas.setAttribute('height', MAX_HEIGHT);
+    canvas.setAttribute('style', 'border: none');
+    ctx = canvas.getContext('2d');
+
+    // dat.GUI user interface components
+    var gui = new dat.GUI({ autoPlace: false });
+    var guiContainer = document.getElementById('gui');
+    guiContainer.appendChild(gui.domElement);
+    document.body.insertBefore(canvas, guiContainer);
+
+    // let the user select a demo to view
+    var pickDemo = gui.add(this, "demoName",
+        {
+            none: null,
+            Alife: "Alife"
+        }
+    );
+    pickDemo.onFinishChange(
+        function(value)
+        {
+            console.log("Changing demo...", value);
+
+            if (demo)
+            {
+                demo.destroy();
+                demo = null;
+            }
+
+            if (value && window[value])
+            {
+                demo = new window[value](docId);
+                demo.create();
+            }
+
+            // remember the selected demo name
+            demoName = value;
+        }
+    );
+
+    // fps counter
+    var stats = null;
+    stats = new Stats();
+    stats.setMode(0);
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.right = '0px';
+    stats.domElement.style.bottom = '0px';
+    document.body.appendChild( stats.domElement );
+
+    // add an update timer
+    var vendors = [
+        'ms',
+        'moz',
+        'webkit',
+        'o'
+    ];
+
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; x++)
+    {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'];
+    }
+
+    // handle the timer
+    var onLoop = function ()
+    {
+    	// schedule the next timer
+	    rafID = window.requestAnimationFrame(onLoop);
+
+	    // update the current demo
+	    stats.begin();
+	    if (demo)
+	    	demo.update();
+	    stats.end();
+    };
+
+    // start the timer
+    this.rafID = window.requestAnimationFrame(onLoop);
+
+</script>
+
+</body>
+</html>
