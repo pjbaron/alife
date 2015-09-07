@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">  <!-- request GPU rasterization from Chrome browsers, where available -->
+    <meta charset="utf-8" />
+    <title>ALife Voxels</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            border: none;
+        }
+
+        #gui {
+            position: absolute;
+            top: 200px;
+            right: 0;
+        }
+    </style>
+
+    <script type="text/javascript" src="lib/dat.gui.js"></script>
+    <script type="text/javascript" src="lib/stats.js"></script>
+    <script type="text/javascript" src="lib/jszip.js"></script>
+
+    <script type="text/javascript" src="data_structures/pbMatrix3.js"></script>
+    <script type="text/javascript" src="data_structures/pbMatrix4.js"></script>
+    <script type="text/javascript" src="data_structures/pbRectangle.js"></script>
+    <script type="text/javascript" src="data_structures/pbDictionary.js"></script>
+
+    <script type="text/javascript" src="root/pbPhaserRender.js"></script>
+    <script type="text/javascript" src="root/pbRenderer.js"></script>
+    <script type="text/javascript" src="root/pbRootTimer.js"></script>
+
+    <script type="text/javascript" src="textures/pbSurface.js"></script>
+    <script type="text/javascript" src="textures/pbTextures.js"></script>
+    <script type="text/javascript" src="textures/webgl/pbWebGlTextures.js"></script>
+
+    <script type="text/javascript" src="logical_sprites/pbSprite.js"></script>
+    <script type="text/javascript" src="logical_sprites/pbTransformObject.js"></script>
+    <script type="text/javascript" src="logical_sprites/layers/pbBaseLayer.js"></script>
+    <script type="text/javascript" src="logical_sprites/layers/pbSimpleLayer.js"></script>
+    <script type="text/javascript" src="logical_sprites/layers/canvas/pbCanvasLayer.js"></script>
+    <script type="text/javascript" src="logical_sprites/layers/webgl/pbWebGlLayer.js"></script>
+    <script type="text/javascript" src="logical_sprites/images/pbBaseImage.js"></script>
+    <script type="text/javascript" src="logical_sprites/images/canvas/pbCanvasImage.js"></script>
+    <script type="text/javascript" src="logical_sprites/images/webgl/pbWebGlImage.js"></script>
+
+    <script type="text/javascript" src="renderers/pbBaseGraphics.js"></script>
+    <script type="text/javascript" src="renderers/canvas/pbCanvas.js"></script>
+    <script type="text/javascript" src="renderers/webgl/pbWebGl.js"></script>
+    <script type="text/javascript" src="renderers/webgl/pbWebGlDrawImageSingle.js"></script>
+    <script type="text/javascript" src="renderers/webgl/pbWebGlDrawTextureSingle.js"></script>
+    <script type="text/javascript" src="renderers/webgl/pbWebGlDrawBatch.js"></script>
+    <script type="text/javascript" src="renderers/webgl/shaders/pbWebGlShaders.js"></script>
+    
+    <script type="text/javascript" src="file_handling/pbLoader.js"></script>
+
+    <script type="text/javascript" src="features/pbText.js"></script>
+    <script type="text/javascript" src="features/pbTiles.js"></script>
+    <script type="text/javascript" src="features/pbButtons.js"></script>
+
+
+    <script type="text/javascript" src="_demo/pbMineCraftDemo.js"></script>
+    <script type="text/javascript" src="_demo/pbCamera.js"></script>
+
+    <script type="text/javascript" src="_demo/alife.js"></script>
+    <script type="text/javascript" src="_demo/world.js"></script>
+    <script type="text/javascript" src="_demo/dots.js"></script>
+    <script type="text/javascript" src="_demo/dot.js"></script>
+
+    <script type="text/javascript" src="_demo/brain/Box.js"></script>
+    <script type="text/javascript" src="_demo/brain/Brain.js"></script>
+    <script type="text/javascript" src="_demo/brain/Node.js"></script>
+
+</head>
+
+<body>
+
+    <div id="gui"></div>
+    <font color="white"><div id="information">
+        <div id="tick">Tick: 0</div>
+        <div id="alive">Alive: 0</div>
+        <div id="oldest">Oldest: 0</div>
+        <div id="average">Average age: 0</div>
+    </div></font>
+
+<script type="text/javascript">
+
+/**
+ * NOTE: use of the 'pb' prefix on all classes in this test bed is essential for renaming class references without ambiguity.
+ * During development it is expected that class names, hierarchies and inter-relationships will change frequently as we grow towards the final structure.
+ */
+
+    // globals
+    var demo;
+    var docId = 'alife';
+    var demoName = null;
+    var useRenderer = 'webgl';             // which renderer will the demos use today?  valid values: undefined, 'webgl', 'canvas'  Switchable by dat.GUI pickRenderer widget.
+    var layerClass = pbCanvasLayer;         // TODO: consider making a FunctionManager class to handle switchable classes and functions like this more tidily
+    var imageClass = pbCanvasImage;
+    
+    
+    // after reading: http://www.sitepoint.com/google-closure-how-not-to-write-javascript/
+    var _undefinedCheck;
+    if (undefined !== _undefinedCheck)
+    {
+        alert("'undefined' has been redefined which will screw up this script.");
+    }
+
+    // fps counter
+    var stats = null;
+    stats = new Stats();
+    stats.setMode(0);
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.right = '0px';
+    stats.domElement.style.bottom = '0px';
+    document.body.appendChild( stats.domElement );
+
+    // dat.GUI user interface components
+    var gui = new dat.GUI({ autoPlace: false });
+
+    var guiContainer = document.getElementById('gui');
+    guiContainer.appendChild(gui.domElement);
+
+    // start the demo
+    demo = new pbMineCraftDemo(docId);
+
+    //
+    // additions to the Math class
+    //
+
+    Math.randInt = function(_max)
+    {
+        return Math.floor(Math.random() * _max);
+    };
+    
+    Math.randRange = function(_min, _max)
+    {
+        return Math.random() * (_max - _min) + _min;
+    };
+
+</script>
+
+</body>
+</html>
