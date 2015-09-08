@@ -83,10 +83,13 @@ Dots.prototype.update = function( _breed )
 		}
 	}
 
+	// if population is dieing out
 	if (this.list.length < 512)
 	{
-		// if population is dieing out because they're all rubbish
+		// make a new random dot
 		this.makeNewDot();
+		// and make another one from randomly picked 'parents'
+		this.breedDots(this.list[Math.randInt(this.list.length - 1)], this.list[Math.randInt(this.list.length - 1)]);
 	}
 
 	this.oldest = oldest;
@@ -148,7 +151,7 @@ Dots.prototype.makeNewDot = function()
 };
 
 
-Dots.prototype.createDot = function( _parent1, _parent2 )
+Dots.prototype.breedDots = function( _parent1, _parent2 )
 {
 	var where = this.world.findAdjacentCreatureSpace( _parent1 );
 	if ( !where ) where = this.world.findAdjacentCreatureSpace( _parent2 );

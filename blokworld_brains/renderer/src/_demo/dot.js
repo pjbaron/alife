@@ -193,7 +193,7 @@ Dot.prototype.collisionResponse = function( _hit, _breed )
 		if ( this.energy >= Dots.CHILD_ENERGY * 2.0 && _hit.energy >= Dots.CHILD_ENERGY * 2.0 )
 		{
 			// TODO: genetic cross-over between this and _hit
-			this.parent.createDot( this, _hit );
+			this.parent.breedDots( this, _hit );
 		}
 	}
 };
