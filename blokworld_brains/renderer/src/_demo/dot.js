@@ -106,18 +106,18 @@ Dot.prototype.update = function( _breed )
 	// use extra energy when moving uphill
 	if ( newTerrain > this.terrain )
 	{
-		this.energy -= 0.25;
+		this.energy -= (newTerrain - this.terrain);
 	}
 
 	// use lots of energy if I'm in the water
 	if ( newTerrain === 0 )
 	{
-		this.energy -= 4.0;
+		this.energy -= 3.0;
 	}
 
 	// slowly use energy just existing (with random variation)
 	// use more energy when getting old...
-	this.energy -= Math.random() * 0.75 + 0.25 + this.age / 2000.0;
+	this.energy -= Math.random() * 0.75 + 0.25 + this.age / 2500.0;
 
 	// I ran out of energy... I'm dead!
 	if ( this.energy <= 0 )
@@ -146,17 +146,17 @@ Dot.prototype.update = function( _breed )
 	inputs.push( this.terrain );
 
 	// look at terrain ahead
-	this.look( inputs, angle - 0.1, 2, this.world.seeTerrain );
-	this.look( inputs, angle      , 2, this.world.seeTerrain );
-	this.look( inputs, angle + 0.1, 2, this.world.seeTerrain );
+	this.look( inputs, angle - 0.1, 4, this.world.seeTerrain );
+	this.look( inputs, angle      , 4, this.world.seeTerrain );
+	this.look( inputs, angle + 0.1, 4, this.world.seeTerrain );
 
 	// be aware of my own energy levels for box 2
 	inputs.push( this.energy );
 
 	// look at other dots in front
-	this.look( inputs, angle - 0.1, 2, this.world.seeDot );
-	this.look( inputs, angle      , 2, this.world.seeDot );
-	this.look( inputs, angle + 0.1, 2, this.world.seeDot );
+	this.look( inputs, angle - 0.1, 4, this.world.seeDot );
+	this.look( inputs, angle      , 4, this.world.seeDot );
+	this.look( inputs, angle + 0.1, 4, this.world.seeDot );
 
 	// be aware of my facing direction (in degrees)
 	// inputs.push( angle * 180.0 / Math.PI );
