@@ -8,9 +8,9 @@
 
 
 
-Dots.MAX_EAT = 64.0;
+Dots.MAX_EAT = 32.0;
 Dots.CORPSE_FOOD = 16.0;
-Dots.CHILD_ENERGY = 64.0;
+Dots.CHILD_ENERGY = 128.0;
 
 
 
@@ -44,53 +44,7 @@ Dots.prototype.create = function( _numDots )
 	var i = _numDots;
 	while(i--)
 	{
-		// create a dot
-		this.list[ i ] = new Dot( this );
-
-		// keep trying until we find an empty location in the world
-		var x, y, vx, vy;
-		var tries = 100;
-		do {
-			x = Math.random() * World.sizeX;
-			y = Math.random() * World.sizeY;
-			var r = Math.floor( Math.random() * ( 360 / 30 ) ) * 30 * Math.PI / 180;
-			var c = Math.cos( r );
-			var s = Math.sin( r );
-			var speed = 0.25;
-			vx = c * speed;
-			vy = s * speed;
-
-			flag = this.list[ i ].create( x, y, vx, vy );
-
-			// time to give up on random if this world is nearly full
-			if ( --tries < 0 && !flag )
-			{
-				var firstx = x;
-				var firsty = y;
-				search:
-				{
-					// search starting at the last random x,y location
-					for ( ; x < World.sizeX; x++ )
-					{
-						for ( ; y < World.sizeY; y++ )
-							if ( ( flag = this.list[ i ].create( x, y, vx, vy ) ) === true )
-								break search;
-						y = 0;
-					}
-
-					for ( x = 0; x < World.sizeX; x++ )
-					{
-						// back to starting point... we didn't find a slot
-						if ( x > firstx || ( x == firstx && y >= firsty ) )
-							break search;
-						for ( y = 0; y < World.sizeY; y++ )
-							if ( ( flag = this.list[ i ].create( x, y, vx, vy ) ) === true )
-								break search;
-					}
-				}
-				tries = 100;
-			}
-		} while ( !flag );
+		this.makeNewDot();
 	}
 
 	console.log( "Dots.create finished", this.list.length );
@@ -129,9 +83,68 @@ Dots.prototype.update = function( _breed )
 		}
 	}
 
+	if (this.list.length < 512)
+	{
+		// if population is dieing out because they're all rubbish
+		this.makeNewDot();
+	}
+
 	this.oldest = oldest;
 	this.average = average / this.list.length;
 	return this.list.length;
+};
+
+
+Dots.prototype.makeNewDot = function()
+{
+	// create a new random dot
+	var dot = new Dot( this );
+
+	// keep trying until we find an empty location in the world
+	var x, y, vx, vy;
+	var tries = 100;
+	do {
+		x = Math.random() * World.sizeX;
+		y = Math.random() * World.sizeY;
+		var r = (Math.random() * 360 - 180) * Math.PI / 180;
+		var c = Math.cos( r );
+		var s = Math.sin( r );
+		var speed = 0.50;
+		vx = c * speed;
+		vy = s * speed;
+
+		flag = dot.create( x, y, vx, vy );
+
+		// time to give up on random if this world is nearly full
+		if ( --tries < 0 && !flag )
+		{
+			var firstx = x;
+			var firsty = y;
+			search:
+			{
+				// search starting at the last random x,y location
+				for ( ; x < World.sizeX; x++ )
+				{
+					for ( ; y < World.sizeY; y++ )
+						if ( ( flag = this.list[ i ].create( x, y, vx, vy ) ) === true )
+							break search;
+					y = 0;
+				}
+
+				for ( x = 0; x < World.sizeX; x++ )
+				{
+					// back to starting point... we didn't find a slot
+					if ( x > firstx || ( x == firstx && y >= firsty ) )
+						break search;
+					for ( y = 0; y < World.sizeY; y++ )
+						if ( ( flag = this.list[ i ].create( x, y, vx, vy ) ) === true )
+							break search;
+				}
+			}
+			tries = 100;
+		}
+	} while ( !flag );
+	this.list.push(dot);
 };
 
 
