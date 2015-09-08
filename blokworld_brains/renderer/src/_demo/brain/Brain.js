@@ -18,18 +18,18 @@ Brain.maxWeight = 255.0;
 Brain.boxDescriptions =
 [
 	{
-		inputs: 9,
-		layerSize: [ 12, 6 ],
+		inputs: 12,
+		layerSize: [ 15 ],
 		outputs: 1
 	},
 	{
-		inputs: 7,
-		layerSize: [ 10, 4 ],
+		inputs: 13,
+		layerSize: [ 15 ],
 		outputs: 2
 	},
 	{
-		inputs: 7,
-		layerSize: [ 10, 4 ],
+		inputs: 13,
+		layerSize: [ 15 ],
 		outputs: 2
 	}
  ];
