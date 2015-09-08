@@ -55,8 +55,8 @@ World.prototype.destroy = function()
 World.prototype.update = function()
 {
 	// lots of food at the very start to help initial random population survive
-	// $9f makes it a bit seasonal with periods of famine vs plenty
-	var grow = (pbPhaserRender.frameCount < 1000) || ( ( pbPhaserRender.frameCount & 0x09f ) === 0 );
+	// $11f makes it seasonal with periods of famine vs plenty
+	var grow = (pbPhaserRender.frameCount < 500) || ( ( pbPhaserRender.frameCount & 0x11f ) === 0 );
 
 	var sizeX = World.sizeX;
 	
@@ -74,12 +74,12 @@ World.prototype.update = function()
 			if ( thing )
 			{
 				// it's an active dot, draw it (creatures use the 'a' channel)
-				this.data32[ x + y * sizeX ] = ( col & 0x00ffffff ) | ( ( thing.energy << 24 ) & 0xff000000 );
+				col = this.data32[ x + y * sizeX ] = ( col & 0x00ffffff ) | ( ( thing.energy << 24 ) & 0xff000000 );
 			}
 			else
 			{
 				// it's inactive, clear the alpha bits to show there's no-one there
-				this.data32[ x + y * sizeX ] &= 0x00ffffff;
+				col = this.data32[ x + y * sizeX ] &= 0x00ffffff;
 			}
 
 			if ( grow && ( col & 0x000000ff ) > 0 )
@@ -99,12 +99,12 @@ World.prototype.update = function()
 World.prototype.seeFood = function( _x, _y )
 {
 	var x = Math.floor( _x );
-	if ( x < 0 ) x = World.sizeX - 1;
-	if ( x >= World.sizeX ) x = 0;
+	if ( x < 0 ) x += World.sizeX;
+	if ( x >= World.sizeX ) x -= World.sizeX;
 
 	var y = Math.floor( _y );
-	if ( y < 0 ) y = World.sizeY - 1;
-	if ( y > World.sizeY ) y = 0;
+	if ( y < 0 ) y += World.sizeY;
+	if ( y >= World.sizeY ) y -= World.sizeY;
 
 	var col = this.data32[ x + y * World.sizeX ];
 	var food = ( col & 0x0000ff00 ) >> 8;
@@ -115,12 +115,12 @@ World.prototype.seeFood = function( _x, _y )
 World.prototype.seeTerrain = function( _x, _y )
 {
 	var x = Math.floor( _x );
-	if ( x < 0 ) x = World.sizeX - 1;
-	if ( x >= World.sizeX ) x = 0;
+	if ( x < 0 ) x += World.sizeX;
+	if ( x >= World.sizeX ) x -= World.sizeX;
 
 	var y = Math.floor( _y );
-	if ( y < 0 ) y = World.sizeY - 1;
-	if ( y > World.sizeY ) y = 0;
+	if ( y < 0 ) y += World.sizeY;
+	if ( y >= World.sizeY ) y -= World.sizeY;
 
 	var terrain = ( this.data32[ x + y * World.sizeX ] & 0x000000ff );
 	return terrain;
@@ -130,12 +130,12 @@ World.prototype.seeTerrain = function( _x, _y )
 World.prototype.seeDot = function( _x, _y )
 {
 	var x = Math.floor( _x );
-	if ( x < 0 ) x = World.sizeX - 1;
-	if ( x >= World.sizeX ) x = 0;
+	if ( x < 0 ) x += World.sizeX;
+	if ( x >= World.sizeX ) x -= World.sizeX;
 
 	var y = Math.floor( _y );
-	if ( y < 0 ) y = World.sizeY - 1;
-	if ( y > World.sizeY ) y = 0;
+	if ( y < 0 ) y += World.sizeY;
+	if ( y >= World.sizeY ) y -= World.sizeY;
 
 	var col = this.data32[ x + y * World.sizeX ];
 	var energy = ( col & 0xff000000 ) >> 24;
