@@ -10,10 +10,10 @@
  */
 
 
-Brain.minThreshold = -256.0;
+Brain.minThreshold = -1024.0;
 Brain.maxThreshold = 1024.0;
-Brain.minWeight = -128.0;
-Brain.maxWeight = 255.0;
+Brain.minWeight = -256.0;
+Brain.maxWeight = 256.0;
 
 Brain.boxDescriptions =
 [
